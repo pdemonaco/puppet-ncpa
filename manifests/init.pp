@@ -4,10 +4,6 @@
 #   The community string that the agent will use to authenticate inbound
 #   connections.
 #
-# @param version
-#   When specified, the package manager will attempt to install this version if
-#   possible.
-#
 # @param manage_repo
 #   When true the nagios repo will be installed. Typically this repo resides at
 #   https://repo.nagios.rcom/nagios/
@@ -21,6 +17,11 @@
 #   command on a nagios server. It also provides a web interface that can be
 #   accessed using the community string.
 #
+# @param rpmrepo_url
+#   URL pointing at the RPM file which defines the nagios repo. Note that this
+#   only provides packages for x86_64 systems and will have a default value for
+#   RedHat 7 and 8 family systems.
+# 
 # Authors
 # -------
 #
