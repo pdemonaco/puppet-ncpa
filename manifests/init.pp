@@ -1,20 +1,31 @@
-# Class: ncpa
-# ===========================
+# @summary Manages Nagios Cross-Platform Agent on RedHat family systems
 #
-# Manages Nagios Cross-Platform Agent on RedHat family machines
+# @param community_string
+#   The community string that the agent will use to authenticate inbound
+#   connections.
 #
-# Parameters
-# ----------
+# @param version
+#   When specified, the package manager will attempt to install this version if
+#   possible.
 #
-# Document parameters here.
+# @param manage_repo
+#   When true the nagios repo will be installed. Typically this repo resides at
+#   https://repo.nagios.rcom/nagios/
 #
-# * `community_string`
-# The community_string that the agent will use.
+# @param manage_firewall
+#   When true firewalld will be configured to allow inbound TCP connections on
+#   the listener port.
+#
+# @param port
+#   TCP port the listener daemon uses to provide access for the check_ncpa.py
+#   command on a nagios server. It also provides a web interface that can be
+#   accessed using the community string.
 #
 # Authors
 # -------
 #
 # Ger Apeldoorn <info@gerapeldoorn.nl>
+# Phil DeMonaco <phil@demona.co>
 #
 # Copyright
 # ---------
@@ -22,34 +33,18 @@
 # Copyright 2017 Ger Apeldoorn, unless otherwise noted.
 #
 class ncpa (
-  $community_string,
-  $version = 'installed',
-  $rpmrepo_url = $ncpa::params::rpmrepo_url,
-  ) inherits ncpa::params {
+  String $community_string,
+  Boolean $manage_repo                   = false,
+  Boolean $manage_firewall               = false,
+  Stdlib::Port $port                     = 5693,
+  Optional[Stdlib::HTTPUrl] $rpmrepo_url = undef,
+) {
 
-  ensure_resource( 'package', 'nagios-repo', {
-    'ensure'   => $version,
-    'source'   => $rpmrepo_url,
-    'provider' => 'rpm',
-  })
+  contain ncpa::install
+  contain ncpa::config
+  contain ncpa::service
 
-  service { ['ncpa_listener', 'ncpa_passive']:
-    ensure => running,
-    enable => true,
-  }
-
-  package { 'ncpa':
-    ensure  => installed,
-    require => Package['nagios-repo'],
-  }
-
-  file { '/usr/local/ncpa/etc/ncpa.cfg':
-    ensure  => file,
-    mode    => '0644',
-    owner   => 'nagios',
-    group   => 'nagios',
-    content => epp('ncpa/ncpa.cfg.epp', { 'community_string' => $community_string }),
-    notify  => Service['ncpa_listener', 'ncpa_passive'],
-  }
-
+  Class['ncpa::install']
+  -> Class['ncpa::config']
+  ~> Class['ncpa::service']
 }

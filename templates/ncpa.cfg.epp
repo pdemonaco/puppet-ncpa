@@ -1,3 +1,7 @@
+<%- | Stdlib::Port $port,
+      String $community_string,
+| -%>
+# !!! Managed by Puppet - Do not modify directly as changes will be overwritten !!!
 #
 #   NCPA Main Config File
 #   ---------------------
@@ -12,8 +16,9 @@
 [general]
 
 #
-# Check logging is on by default, you can disable it if you do not want to record
-# the check requests that are coming in or checks being sent over NRDP.
+# Check logging (in ncpa.db and the interface) is on by default, you can disable it
+# if you do not want to record the check requests that are coming in or checks being
+# sent over NRDP.
 # Default: check_logging = 1
 #
 check_logging = 1
@@ -23,6 +28,21 @@ check_logging = 1
 # Default: 30
 #
 check_logging_time = 30
+
+#
+# Excluded file system types removes these fs types from the disk metrics
+# (This is mostly only noteable on UNIX systems but also works on Windows if you need it)
+# Default: aufs,autofs,binfmt_misc,cifs,cgroup,configfs,debugfs,devpts,devtmpfs,
+#          encryptfs,efivarfs,fuse,fusectl,hugetlbfs,mqueue,nfs,overlayfs,proc,pstore,
+#          rpc_pipefs,securityfs,selinuxfs,smb,sysfs,tmpfs,tracefs
+#
+exclude_fs_types = aufs,autofs,binfmt_misc,cifs,cgroup,configfs,debugfs,devpts,devtmpfs,encryptfs,efivarfs,fuse,fusectl,hugetlbfs,mqueue,nfs,overlayfs,proc,pstore,rpc_pipefs,securityfs,selinuxfs,smb,sysfs,tmpfs,tracefs
+
+#
+# The default unit to convert bytes (B) into if no unit is specified
+# (Gi = 1024 MiB, G = 1000 MB)
+#
+default_units = Gi
 
 #
 # -------------------------------
@@ -48,16 +68,24 @@ gid = nagios
 
 #
 # IP address and port number for the Listener to use for the web GUI and API
-# Default: ip = 0.0.0.0
+#
+# :: allows for dual stack (IPv4 and IPv6 on most linux systems) but will only allow
+# for IPv6 connections on Windows
+# 0.0.0.0 allows for IPv4 connections only on Windows and most linux systems
+#
+# Default: ip = ::
+# Default (Windows): ip = 0.0.0.0
 # Default: port = 5693
 #
 ip = 0.0.0.0
-port = 5693
+port = <%= $port %>
 
 #
 # SSL connection and certificate config (if an SSL option is not available on some older
 # operating systems it will default back to TLSv1)
 # ssl_version options: TLSv1, TLSv1_1, TLSv1_2
+#
+# ssl_ciphers = <list of ciphers>
 #
 ssl_version = TLSv1_2
 certificate = adhoc
@@ -83,7 +111,7 @@ pidfile = var/run/ncpa_listener.pid
 # be displayed in the header and will not be available to be accessed.
 # Default: 1
 #
-admin_gui_access = 0
+admin_gui_access = 1
 
 #
 # Admin password for the admin section in the web GUI, by default there is no admin
@@ -101,6 +129,20 @@ admin_password = None
 # Default: 0
 #
 admin_auth_only = 0
+
+#
+# Comma separated list of allowed hosts that can access the API (and GUI)
+# Exmaple: 192.168.23.15
+# Example subnet: 192.168.0.0/28
+#
+# allowed_hosts =
+
+#
+# Number of maximum concurrent connections to the NCPA server.
+# Use "None" for unlimited. Default is 200.
+# Example: 200
+#
+# max_connections =
 
 #
 # -------------------------------
@@ -128,10 +170,10 @@ community_string = <%= $community_string %>
 # Handlers are a comma separated list of what you would like the passive agent to run
 # Default: None
 # Options:
-#   nrds, nrdp
+#   nrds, nrdp, kafkaproducer
 #
 # Example:
-# handlers = nrds,nrdp
+# handlers = nrds,nrdp,kafkaproducer
 #
 handlers = None
 
@@ -203,12 +245,25 @@ hostname = NCPA 2
 #
 # NRDS connection information
 #
-url =
-token =
-config_name =
-config_version =
+url = 
+token = 
+config_name = 
+config_version = 
 update_config = 1
 update_plugins = 1
+
+[kafkaproducer]
+
+#
+# -------------------------------
+# Passive Configuration (Kafka)
+# -------------------------------
+#
+
+hostname = None
+servers = localhost:9092
+clientname = NCPA-Kafka
+topic = ncpa
 
 #
 # -------------------------------
@@ -259,4 +314,5 @@ plugin_path = plugins/
 # Windows
 .ps1 = powershell -ExecutionPolicy Bypass -File $plugin_name $plugin_args
 .vbs = cscript $plugin_name $plugin_args //NoLogo
+.wsf = cscript $plugin_name $plugin_args //NoLogo
 .bat = cmd /c $plugin_name $plugin_args

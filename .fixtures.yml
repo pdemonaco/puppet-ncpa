@@ -1,0 +1,10 @@
+---
+# See https://github.com/puppetlabs/puppetlabs_spec_helper for reference
+fixtures:
+  forge_modules:
+    stdlib:
+      repo: 'puppetlabs/stdlib'
+      ref: '6.0.0'
+    firewalld:
+      repo: 'crayfishx/firewalld'
+      ref: '3.4.0'
