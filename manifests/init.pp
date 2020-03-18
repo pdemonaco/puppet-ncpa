@@ -17,11 +17,21 @@
 #   command on a nagios server. It also provides a web interface that can be
 #   accessed using the community string.
 #
+# @param install_dir
+#   Base directory containing the installation of the ncpa agent. This is
+#   configured via defaults set in hiera and is typically `/usr/local/ncpa` or
+#   `C:\Program Files (x86)\Nagios\NCPA` for Linux and Windows respectively.
+#
+# @param plugin_dir
+#   Directory in which plugins will be installed on the target host.
+#   This is also used as the plugin_dir directive. Note that the deployment
+#   currently assumes this is a subdirectory of $install_dir
+#
 # @param rpmrepo_url
 #   URL pointing at the RPM file which defines the nagios repo. Note that this
 #   only provides packages for x86_64 systems and will have a default value for
 #   RedHat 7 and 8 family systems.
-# 
+#
 # Authors
 # -------
 #
@@ -38,6 +48,8 @@ class ncpa (
   Boolean $manage_repo                   = false,
   Boolean $manage_firewall               = false,
   Stdlib::Port $port                     = 5693,
+  Stdlib::AbsolutePath $install_dir      = undef,
+  String $plugin_dir                     = 'plugins/',
   Optional[Stdlib::HTTPUrl] $rpmrepo_url = undef,
 ) {
 

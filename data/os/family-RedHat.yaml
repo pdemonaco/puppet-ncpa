@@ -1,0 +1,3 @@
+---
+# Redhat NCPA root
+ncpa::install_dir: '/usr/local/ncpa'
