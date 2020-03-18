@@ -27,6 +27,10 @@
 #   This is also used as the plugin_dir directive. Note that the deployment
 #   currently assumes this is a subdirectory of $install_dir
 #
+# @param plugin_files
+#   Array of Ncpa::PluginFile entries each of which define the name and content
+#   of individual plugin files which are to be added to the $plugin_dir.
+#
 # @param rpmrepo_url
 #   URL pointing at the RPM file which defines the nagios repo. Note that this
 #   only provides packages for x86_64 systems and will have a default value for
@@ -50,6 +54,7 @@ class ncpa (
   Stdlib::Port $port                     = 5693,
   Stdlib::AbsolutePath $install_dir      = undef,
   String $plugin_dir                     = 'plugins/',
+  Array[Ncpa::PluginFile] $plugin_files  = [],
   Optional[Stdlib::HTTPUrl] $rpmrepo_url = undef,
 ) {
 
