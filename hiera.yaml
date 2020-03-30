@@ -6,15 +6,15 @@ defaults:
 hierarchy:
   - name: "OS Kernel Defaults"
     paths:
-      - "os/kernel-%{facts.os.family}.yaml"
+      - "os/kernel_%{facts.os.family}.yaml"
 
   - name: "OS Family Defaults"
     paths:
-      - "os/family-%{facts.os.family}.yaml"
+      - "os/family_%{facts.os.family}.yaml"
 
   - name: "OS Family Major Release Defaults"
     paths:
-      - "os/%{facts.os.family}-%{facts.os.release.major}.yaml"
+      - "os/family_%{facts.os.family}-release-major_%{facts.os.release.major}.yaml"
 
   - name: "Common data"
     path: "common.yaml"
