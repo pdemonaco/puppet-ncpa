@@ -4,7 +4,7 @@ fixtures:
   forge_modules:
     stdlib:
       repo: 'puppetlabs/stdlib'
-      ref: '6.0.0'
+      ref: '6.2.0'
     firewalld:
-      repo: 'crayfishx/firewalld'
-      ref: '3.4.0'
+      repo: 'puppet/firewalld'
+      ref: '4.2.4'

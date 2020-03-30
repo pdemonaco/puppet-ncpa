@@ -6,6 +6,9 @@ describe 'ncpa::config' do
       manage_firewall: false,
       port: 5693,
       community_string: 'my-awesome-community',
+      install_dir: '/usr/local/ncpa',
+      plugin_dir: 'plugins/',
+      plugin_files: [],
     }
   end
 
@@ -17,7 +20,7 @@ describe 'ncpa::config' do
     is_expected.to contain_file('/usr/local/ncpa/etc/ncpa.cfg').with(
       ensure: 'file',
       mode: '0644',
-      owner: 'nagios',
+      owner: 'root',
       group: 'nagios',
     )
   end
@@ -26,6 +29,7 @@ describe 'ncpa::config' do
     content = catalogue.resource('file', '/usr/local/ncpa/etc/ncpa.cfg').send(:parameters)[:content]
     expect(content).to match(%r{community_string = #{params[:community_string]}})
     expect(content).to match(%r{port = #{params[:port]}})
+    expect(content).to match(%r{plugin_path = #{params[:plugin_dir]}})
   end
 
   context 'managing firewall' do
@@ -58,6 +62,45 @@ describe 'ncpa::config' do
         service: 'ncpa_listener',
         zone: 'public',
       )
+    end
+  end
+
+  context 'including plugin files' do
+    before(:each) do
+      params.merge!(
+        plugin_files: [
+          {
+            name: 'check_multipath.py',
+            content: 'puppet:///module_specific/ncpa/check_multipath.py',
+          },
+          {
+            name: 'check_honeypot_files.py',
+            content: '/tmp/check_honeypot_files.py',
+          },
+          {
+            name: 'honeycomb.tsv',
+            content: 'https://some-server.org/honeycomb.tsv',
+          },
+        ],
+      )
+    end
+
+    it 'installs the plugin files in the plugin dir' do
+      files = params[:plugin_files]
+      ncpa_dir = params[:install_dir]
+      plugin_dir = params[:plugin_dir]
+      files.each do |entry|
+        filename = entry[:name]
+        content = entry[:content]
+        target_path = "#{ncpa_dir}/#{plugin_dir}/#{filename}"
+        is_expected.to contain_file(target_path).with(
+          ensure: 'file',
+          mode: '0644',
+          owner: 'root',
+          group: 'nagios',
+          source: content,
+        )
+      end
     end
   end
 end

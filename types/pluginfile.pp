@@ -5,6 +5,6 @@ type Ncpa::PluginFile = Hash[
   ],
   Variant[
     String,
-    Stdlib::AbsolutePath,
+    Ncpa::SourceUrl,
   ],
 ]
