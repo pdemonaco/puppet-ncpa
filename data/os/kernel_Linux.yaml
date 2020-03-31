@@ -1,2 +1,3 @@
 ---
+# Standard Linux NCPA directory
 ncpa::install_dir: '/usr/local/ncpa'

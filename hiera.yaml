@@ -6,7 +6,7 @@ defaults:
 hierarchy:
   - name: "OS Kernel Defaults"
     paths:
-      - "os/kernel_%{facts.os.family}.yaml"
+      - "os/kernel_%{facts.kernel}.yaml"
 
   - name: "OS Family Defaults"
     paths:
