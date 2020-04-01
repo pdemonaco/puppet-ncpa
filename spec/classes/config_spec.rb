@@ -89,6 +89,13 @@ describe 'ncpa::config' do
       files = params[:plugin_files]
       ncpa_dir = params[:install_dir]
       plugin_dir = params[:plugin_dir]
+      plugin_path = "#{ncpa_dir}/#{plugin_dir}"
+      is_expected.to contain_file(plugin_path).with(
+        ensure: 'directory',
+        mode: '0755',
+        owner: 'root',
+        group: 'nagios',
+      )
       files.each do |entry|
         filename = entry[:name]
         content = entry[:content]
@@ -99,6 +106,7 @@ describe 'ncpa::config' do
           owner: 'root',
           group: 'nagios',
           source: content,
+          require: "File[#{plugin_path}]",
         )
       end
     end

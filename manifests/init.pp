@@ -49,18 +49,35 @@
 #
 class ncpa (
   String $community_string,
-  Boolean $manage_repo                   = false,
-  Boolean $manage_firewall               = false,
-  Stdlib::Port $port                     = 5693,
-  Stdlib::AbsolutePath $install_dir      = undef,
-  String $plugin_dir                     = 'plugins/',
-  Array[Ncpa::PluginFile] $plugin_files  = [],
-  Optional[Stdlib::HTTPUrl] $rpmrepo_url = undef,
+  Boolean $manage_repo                           = false,
+  Boolean $manage_firewall                       = false,
+  Stdlib::Port $port                             = 5693,
+  Stdlib::AbsolutePath $install_dir              = undef,
+  String $plugin_dir                             = 'plugins/',
+  Array[Ncpa::PluginFile] $plugin_files          = [],
+  Optional[Stdlib::HTTPUrl] $rpmrepo_url         = undef,
+  Optional[String] $package_version              = 'installed',
+  Optional[Stdlib::AbsolutePath] $package_source = undef,
 ) {
 
   contain ncpa::install
   contain ncpa::config
   contain ncpa::service
+
+  # Perform kernel specific error handling
+  case $facts['kernel'] {
+    'Linux': {
+      if $manage_repo and $rpmrepo_url == undef {
+        fail("'rpmrepo_url' must be provided when 'manage_repo' is enabled!")
+      }
+    }
+    'windows': {
+      if $package_source == undef {
+        fail("'package_source' must be specified on windows!")
+      }
+    }
+    default: {}
+  }
 
   Class['ncpa::install']
   -> Class['ncpa::config']

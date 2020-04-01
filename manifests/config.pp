@@ -47,7 +47,7 @@ class ncpa::config (
   file { $plugin_path:
     ensure => 'directory',
     owner  => 'root',
-    group  => 'root',
+    group  => 'nagios',
     mode   => '0755',
   }
 
