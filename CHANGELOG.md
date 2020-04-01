@@ -7,6 +7,8 @@
 * Added support for firewall configuration via firewalld
 * Module converted to PDK format for easier development and testing
 * Significant rewrite of test code
+* Added windows support
+* Added plugin deployment support
 
 ## Release 0.3.0
 

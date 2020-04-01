@@ -10,7 +10,7 @@
 #
 # @param manage_firewall
 #   When true firewalld will be configured to allow inbound TCP connections on
-#   the listener port.
+#   the listener port. Note that this currently does nothing on Windows.
 #
 # @param port
 #   TCP port the listener daemon uses to provide access for the check_ncpa.py
@@ -35,6 +35,15 @@
 #   URL pointing at the RPM file which defines the nagios repo. Note that this
 #   only provides packages for x86_64 systems and will have a default value for
 #   RedHat 7 and 8 family systems.
+#
+# @param package_version
+#   This parameter is used as the `ensure` value for the NCPA package. If
+#   specified it must match the version you're actually providing. Note that
+#   `latest` doesn't work on windows!
+#
+# @param package_source
+#   Path to the installation file for the Windows NCPA package. It is possible
+#   that this file must be local to the node since that installer is an exe.
 #
 # Authors
 # -------

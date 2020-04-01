@@ -50,7 +50,7 @@ Default value: `false`
 Data type: `Boolean`
 
 When true firewalld will be configured to allow inbound TCP connections on
-the listener port.
+the listener port. Note that this currently does nothing on Windows.
 
 Default value: `false`
 
@@ -64,6 +64,35 @@ accessed using the community string.
 
 Default value: 5693
 
+##### `install_dir`
+
+Data type: `Stdlib::AbsolutePath`
+
+Base directory containing the installation of the ncpa agent. This is
+configured via defaults set in hiera and is typically `/usr/local/ncpa` or
+`C:\Program Files (x86)\Nagios\NCPA` for Linux and Windows respectively.
+
+Default value: `undef`
+
+##### `plugin_dir`
+
+Data type: `String`
+
+Directory in which plugins will be installed on the target host.
+This is also used as the plugin_dir directive. Note that the deployment
+currently assumes this is a subdirectory of $install_dir
+
+Default value: 'plugins/'
+
+##### `plugin_files`
+
+Data type: `Array[Ncpa::PluginFile]`
+
+Array of Ncpa::PluginFile entries each of which define the name and content
+of individual plugin files which are to be added to the $plugin_dir.
+
+Default value: []
+
 ##### `rpmrepo_url`
 
 Data type: `Optional[Stdlib::HTTPUrl]`
@@ -71,6 +100,25 @@ Data type: `Optional[Stdlib::HTTPUrl]`
 URL pointing at the RPM file which defines the nagios repo. Note that this
 only provides packages for x86_64 systems and will have a default value for
 RedHat 7 and 8 family systems.
+
+Default value: `undef`
+
+##### `package_version`
+
+Data type: `Optional[String]`
+
+This parameter is used as the `ensure` value for the NCPA package. If
+specified it must match the version you're actually providing. Note that
+`latest` doesn't work on windows!
+
+Default value: 'installed'
+
+##### `package_source`
+
+Data type: `Optional[Stdlib::AbsolutePath]`
+
+Path to the installation file for the Windows NCPA package. It is possible
+that this file must be local to the node since that installer is an exe.
 
 Default value: `undef`
 
@@ -106,6 +154,30 @@ Data type: `String`
 
 Default value: $ncpa::community_string
 
+##### `install_dir`
+
+Data type: `String`
+
+
+
+Default value: $ncpa::install_dir
+
+##### `plugin_dir`
+
+Data type: `String`
+
+
+
+Default value: $ncpa::plugin_dir
+
+##### `plugin_files`
+
+Data type: `Array[Ncpa::PluginFile]`
+
+
+
+Default value: $ncpa::plugin_files
+
 ### ncpa::install
 
 Implementation detail, installs packages
@@ -122,6 +194,14 @@ Data type: `Boolean`
 
 Default value: $ncpa::manage_repo
 
+##### `package_version`
+
+Data type: `String`
+
+
+
+Default value: $ncpa::package_version
+
 ##### `rpmrepo_url`
 
 Data type: `Optional[Stdlib::HTTPUrl]`
@@ -129,6 +209,14 @@ Data type: `Optional[Stdlib::HTTPUrl]`
 
 
 Default value: $ncpa::rpmrepo_url
+
+##### `package_source`
+
+Data type: `Optional[String]`
+
+
+
+Default value: $ncpa::package_source
 
 ### ncpa::service
 
