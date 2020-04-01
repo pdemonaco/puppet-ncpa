@@ -34,6 +34,13 @@ describe 'ncpa::install' do
     context "on kernel #{name}" do
       let(:facts) { facts }
       let(:params) { param_map[name] }
+      let(:package_name) do
+        if facts[:kernel] == 'windows'
+          'NCPA'
+        else
+          'ncpa'
+        end
+      end
 
       context 'with manage repo disabled' do
         before(:each) do
@@ -51,11 +58,6 @@ describe 'ncpa::install' do
         end
 
         it 'installs ncpa' do
-          package_name = if facts[:kernel] == 'windows'
-                           'NCPA'
-                         else
-                           'ncpa'
-                         end
           package_parameters = case facts[:kernel]
                                when 'windows'
                                  {
@@ -90,7 +92,7 @@ describe 'ncpa::install' do
               ensure: 'present',
               source: params[:rpmrepo_url],
               provider: 'rpm',
-              before: 'Package[ncpa]',
+              before: "Package[#{package_name}]",
             )
           end
         else
@@ -100,11 +102,6 @@ describe 'ncpa::install' do
         end
 
         it 'installs ncpa' do
-          package_name = if facts[:kernel] == 'windows'
-                           'NCPA'
-                         else
-                           'ncpa'
-                         end
           package_parameters = case facts[:kernel]
                                when 'windows'
                                  {

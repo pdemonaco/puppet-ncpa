@@ -23,22 +23,24 @@ class ncpa::config (
   }
 
   # Configure the firewall if specified
-  if $manage_firewall {
-    include firewalld
+  if $facts['kernel'] == 'Linux' {
+    if $manage_firewall {
+      include firewalld
 
-    firewalld::custom_service { 'ncpa_listener':
-      description => 'Nagios Cross Platform Agent Listener Traffic',
-      port        => [
-        {
-          'port'     => $port,
-          'protocol' => 'tcp',
-        },
-      ],
-    }
-    firewalld_service { 'Nagios Cross Platform Agent Listener Traffic':
-      ensure  => 'present',
-      service => 'ncpa_listener',
-      zone    => 'public',
+      firewalld::custom_service { 'ncpa_listener':
+        description => 'Nagios Cross Platform Agent Listener Traffic',
+        port        => [
+          {
+            'port'     => $port,
+            'protocol' => 'tcp',
+          },
+        ],
+      }
+      firewalld_service { 'Nagios Cross Platform Agent Listener Traffic':
+        ensure  => 'present',
+        service => 'ncpa_listener',
+        zone    => 'public',
+      }
     }
   }
 
