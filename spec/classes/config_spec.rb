@@ -70,6 +70,34 @@ describe 'ncpa::config' do
       ],
     }
   end
+  let(:file_permissions) do
+    {
+      'Windows' => {
+        dir: {
+          ensure: 'directory',
+          owner: 'Administrators',
+        },
+        file: {
+          ensure: 'file',
+          owner: 'Administrators',
+        },
+      },
+      'Generic-Linux' => {
+        dir: {
+          ensure: 'directory',
+          mode: '0755',
+          owner: 'root',
+          group: 'nagios',
+        },
+        file: {
+          ensure: 'file',
+          mode: '0644',
+          owner: 'root',
+          group: 'nagios',
+        },
+      },
+    }
+  end
 
   os_list.each do |os, os_facts|
     context "on os #{os}" do
@@ -84,16 +112,24 @@ describe 'ncpa::config' do
         params_base.deep_merge!(params_os)
       end
 
+      before(:each) do
+        # See https://github.com/rodjek/rspec-puppet/issues/665 for context
+        # This lets linux fake it till it makes it
+        if os == 'Windows'
+          # rubocop:disable RSpec/AnyInstance
+          allow_any_instance_of(Puppet::Type.type(:acl).provider(:windows)).to receive(:validate)
+          # rubocop:enable RSpec/AnyInstance
+        end
+      end
+
       it 'compiles' do
         is_expected.to compile.with_all_deps
       end
 
       it 'creates the ncpa.conf file' do
+        file_properties = file_permissions[os][:file]
         is_expected.to contain_file("#{params[:install_dir]}/etc/ncpa.cfg").with(
-          ensure: 'file',
-          mode: '0644',
-          owner: 'root',
-          group: 'nagios',
+          file_properties,
         )
       end
 
@@ -161,23 +197,25 @@ describe 'ncpa::config' do
           ncpa_dir = params[:install_dir]
           plugin_dir = params[:plugin_dir]
           plugin_path = "#{ncpa_dir}/#{plugin_dir}"
+          dir_properties = file_permissions[os][:dir]
           is_expected.to contain_file(plugin_path).with(
-            ensure: 'directory',
-            mode: '0755',
-            owner: 'root',
-            group: 'nagios',
+            dir_properties,
           )
           files.each do |entry|
             filename = entry[:name]
             content = entry[:content]
             target_path = "#{ncpa_dir}/#{plugin_dir}/#{filename}"
-            is_expected.to contain_file(target_path).with(
-              ensure: 'file',
-              mode: '0644',
-              owner: 'root',
-              group: 'nagios',
+            file_properties = file_permissions[os][:file].merge(
               source: content,
               require: "File[#{plugin_path}]",
+            )
+            is_expected.to contain_file(target_path).with(
+              file_properties,
+            )
+          end
+          if os == 'Windows'
+            is_expected.to contain_acl(plugin_path).with(
+              inherit_parent_permissions: true,
             )
           end
         end

@@ -85,6 +85,16 @@ describe 'ncpa' do
         end
       end
 
+      before(:each) do
+        # See https://github.com/rodjek/rspec-puppet/issues/665 for context
+        # This lets linux fake it till it makes it
+        if os == 'Windows'
+          # rubocop:disable RSpec/AnyInstance
+          allow_any_instance_of(Puppet::Type.type(:acl).provider(:windows)).to receive(:validate)
+          # rubocop:enable RSpec/AnyInstance
+        end
+      end
+
       it 'compiles with all dependencies' do
         is_expected.to compile.with_all_deps
       end
