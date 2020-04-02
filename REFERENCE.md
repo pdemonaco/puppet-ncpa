@@ -72,8 +72,6 @@ Base directory containing the installation of the ncpa agent. This is
 configured via defaults set in hiera and is typically `/usr/local/ncpa` or
 `C:\Program Files (x86)\Nagios\NCPA` for Linux and Windows respectively.
 
-Default value: `undef`
-
 ##### `plugin_dir`
 
 Data type: `String`
@@ -121,6 +119,13 @@ Path to the installation file for the Windows NCPA package. It is possible
 that this file must be local to the node since that installer is an exe.
 
 Default value: `undef`
+
+##### `services`
+
+Data type: `Array[String]`
+
+Different operating systems have different service names (linux vs windows).
+This should auto-populate from hiera.
 
 ### ncpa::config
 
@@ -221,4 +226,16 @@ Default value: $ncpa::package_source
 ### ncpa::service
 
 Implementation detail - enables both ncpa services
+
+#### Parameters
+
+The following parameters are available in the `ncpa::service` class.
+
+##### `services`
+
+Data type: `Array[String]`
+
+
+
+Default value: $ncpa::services
 
