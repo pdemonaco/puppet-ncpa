@@ -32,10 +32,15 @@ describe 'ncpa::service' do
       end
 
       it 'declares both services' do
+        mode = if facts[:kernel] == 'windows'
+                 'delayed'
+               else
+                 'true'
+               end
         params[:services].each do |service|
           is_expected.to contain_service(service).with(
             ensure: 'running',
-            enable: true,
+            enable: mode,
           )
         end
       end

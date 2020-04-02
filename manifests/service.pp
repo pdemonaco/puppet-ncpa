@@ -2,8 +2,14 @@
 class ncpa::service (
   Array[String] $services = $ncpa::services,
 ){
+  if $facts['kernel'] == 'windows' {
+    $mode = 'delayed'
+  } else {
+    $mode = 'true'
+  }
+
   service { $services:
-    ensure => running,
-    enable => true,
+    ensure => 'running',
+    enable => $mode,
   }
 }
