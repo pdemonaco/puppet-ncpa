@@ -1,7 +1,15 @@
 # @summary Implementation detail - enables both ncpa services
-class ncpa::service {
-  service { ['ncpa_listener', 'ncpa_passive']:
-    ensure => running,
-    enable => true,
+class ncpa::service (
+  Array[String] $services = $ncpa::services,
+){
+  if $facts['kernel'] == 'windows' {
+    $mode = 'delayed'
+  } else {
+    $mode = 'true'
+  }
+
+  service { $services:
+    ensure => 'running',
+    enable => $mode,
   }
 }

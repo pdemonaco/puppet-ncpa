@@ -1,0 +1,8 @@
+---
+# Standard NCPA directory
+ncpa::install_dir: '/usr/local/ncpa'
+
+# Standard NCPA service names
+ncpa::services:
+  - 'ncpa_listener'
+  - 'ncpa_passive'

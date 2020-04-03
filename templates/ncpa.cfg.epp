@@ -1,5 +1,6 @@
 <%- | Stdlib::Port $port,
       String $community_string,
+      String $plugin_dir,
 | -%>
 # !!! Managed by Puppet - Do not modify directly as changes will be overwritten !!!
 #
@@ -276,7 +277,7 @@ topic = ncpa
 #
 # Plugin path where all plugins will be ran from.
 #
-plugin_path = plugins/
+plugin_path = <%= $plugin_dir %>
 
 #
 # Plugin execution timeout in seconds. Different than the check_ncpa.py timeout, which is

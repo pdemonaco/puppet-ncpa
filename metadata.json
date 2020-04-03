@@ -1,6 +1,6 @@
 {
   "name": "gerapeldoorn-ncpa",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "gerapeldoorn",
   "summary": "Install and configure Nagios NCPA agent",
   "license": "Apache-2.0",
@@ -13,15 +13,20 @@
       "version_requirement": ">= 6.0.0 < 7.0.0"
     },
     {
-      "name": "crayfishx-firewalld",
-      "version_requirement": ">= 3.4.0 < 4.0.0"
+      "name": "puppet-firewalld",
+      "version_requirement": ">= 4.2.4 < 5.0.0"
+    },
+    {
+      "name": "puppetlabs-acl",
+      "version_requirement": ">= 3.1.0 < 4.0.0"
     }
   ],
   "operatingsystem_support": [
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
-        "7"
+        "7",
+        "8"
       ]
     },
     {
@@ -30,15 +35,18 @@
         "7",
         "8"
       ]
+    },
+    {
+      "operatingsystem": "Windows"
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.10.0 < 7.0.0"
+      "version_requirement": ">= 5.5.10 < 7.0.0"
     }
   ],
-  "pdk-version": "1.12.0",
-  "template-url": "pdk-default#1.12.0",
-  "template-ref": "1.12.0-0-g55d9ae2"
+  "pdk-version": "1.17.0",
+  "template-url": "pdk-default#1.17.0",
+  "template-ref": "tags/1.17.0-0-gd3a4319"
 }
